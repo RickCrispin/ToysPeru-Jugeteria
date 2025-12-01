@@ -2,6 +2,33 @@ import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
+const PAISES_LATAM = [
+    'Argentina',
+    'Bolivia',
+    'Brasil',
+    'Chile',
+    'Colombia',
+    'Costa Rica',
+    'Cuba',
+    'Ecuador',
+    'El Salvador',
+    'Guatemala',
+    'Guyana',
+    'Haití',
+    'Honduras',
+    'Jamaica',
+    'México',
+    'Nicaragua',
+    'Panamá',
+    'Paraguay',
+    'Perú',
+    'Puerto Rico',
+    'República Dominicana',
+    'Surinam',
+    'Uruguay',
+    'Venezuela'
+]
+
 export default function LoginPage() {
   const { signIn, signUp, user, role, loading } = useAuth()
   const navigate = useNavigate()
@@ -10,9 +37,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [nombre, setNombre] = useState('')
   const [apellidos, setApellidos] = useState('')
+  const [pais, setPais] = useState('')
   const [ciudad, setCiudad] = useState('')
   const [telefono, setTelefono] = useState('')
-  const [selRole, setSelRole] = useState('user')
   const [error, setError] = useState('')
   const [status, setStatus] = useState('')
 
@@ -37,14 +64,12 @@ export default function LoginPage() {
     setStatus('')
     try {
       if (isRegister) {
-        if (!nombre.trim() || !apellidos.trim() || !ciudad.trim() || !telefono.trim()) {
-          setError('Por favor completa nombre, apellidos, ciudad y teléfono.')
+        if (!nombre.trim() || !apellidos.trim() || !pais.trim() || !ciudad.trim() || !telefono.trim()) {
+          setError('Por favor completa nombre, apellidos, país, ciudad y teléfono.')
           return
         }
-        await signUp({ email, password, nombre, apellidos, ciudad, telefono, role: selRole })
-        setStatus(selRole === 'admin'
-          ? 'Registro exitoso. Se solicitó rol Administrador (requiere aprobación). Revisa tu correo si se requiere confirmación.'
-          : 'Registro exitoso. Revisa tu correo si se requiere confirmación.')
+        await signUp({ email, password, nombre, apellidos, pais, ciudad, telefono })
+        setStatus('Registro exitoso. Revisa tu correo si se requiere confirmación.')
       } else {
         await signIn(email, password)
         navigate('/')
@@ -56,80 +81,82 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-purple-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 space-y-6 animate-fade-in">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-8 space-y-6 animate-fade-in">
         <h1 className="text-3xl font-extrabold text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
           {isRegister ? 'Crear cuenta' : 'Iniciar sesión'}
         </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           {isRegister && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold mb-1">Nombre</label>
+                <label className="block text-sm font-semibold mb-2 text-gray-700">Nombre</label>
                 <input
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1">Apellidos</label>
+                <label className="block text-sm font-semibold mb-2 text-gray-700">Apellidos</label>
                 <input
                   value={apellidos}
                   onChange={(e) => setApellidos(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1">Ciudad</label>
+                <label className="block text-sm font-semibold mb-2 text-gray-700">País</label>
+                <select
+                  value={pais}
+                  onChange={(e) => setPais(e.target.value)}
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  required
+                >
+                  <option value="">Selecciona un país</option>
+                  {PAISES_LATAM.map(p => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-gray-700">Ciudad</label>
                 <input
                   value={ciudad}
                   onChange={(e) => setCiudad(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1">Teléfono</label>
+                <label className="block text-sm font-semibold mb-2 text-gray-700">Teléfono</label>
                 <input
                   value={telefono}
                   onChange={(e) => setTelefono(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                   required
                 />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="block text-sm font-semibold mb-1">Rol</label>
-                <select
-                  value={selRole}
-                  onChange={(e) => setSelRole(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="user">Usuario</option>
-                  <option value="admin">Administrador (solicitar)</option>
-                </select>
-                <p className="text-xs text-gray-500 mt-1">Nota: por seguridad, las cuentas nuevas se crean con rol "Usuario". El rol administrador requiere aprobación.</p>
               </div>
             </div>
           )}
           <div>
-            <label className="block text-sm font-semibold mb-1">Email</label>
+            <label className="block text-sm font-semibold mb-2 text-gray-700">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold mb-1">Password</label>
+            <label className="block text-sm font-semibold mb-2 text-gray-700">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
               required
             />
           </div>

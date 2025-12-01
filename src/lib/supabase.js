@@ -9,7 +9,7 @@ console.log('🔧 Configuración Supabase:', {
 })
 
 if (!supabaseUrl || !supabaseKey) {
-    console.error('❌ Faltan variables de entorno de Supabase.')
+    console.error('Faltan variables de entorno de Supabase.')
     console.error('Asegúrate de definir VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en un archivo .env')
     console.error('Luego reinicia el servidor de desarrollo (npm run dev)')
 }
@@ -19,5 +19,5 @@ export const supabase = supabaseUrl && supabaseKey
     : null
 
 if (!supabase) {
-  console.error('❌ Cliente de Supabase NO inicializado. Verifica tu archivo .env')
+  console.error('Cliente de Supabase NO inicializado. Verifica tu archivo .env')
 }

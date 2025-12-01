@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { removeFromCart, clearCart, getCart, increaseQty, decreaseQty } from '../lib/cart'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import CheckoutModal from './CheckoutModal'
 
 export default function CartDrawer({ isOpen, onClose }) {
     const [cart, setCart] = useState(getCart())
-    const [showPaymentModal, setShowPaymentModal] = useState(false)
+    const [showCheckout, setShowCheckout] = useState(false)
     const { user } = useAuth()
     const navigate = useNavigate()
 
@@ -36,17 +37,24 @@ export default function CartDrawer({ isOpen, onClose }) {
         decreaseQty(id)
     }
 
-    function handlePay() {
-        if (cart.length === 0) return
+    async function handlePay() {
+        console.log('=== ABRIENDO CHECKOUT ===')
+        console.log('Carrito:', cart)
+        console.log('Usuario:', user)
+        
+        if (cart.length === 0) {
+            console.warn('Carrito vacío, cancelando compra')
+            return
+        }
+        
         if (!user) {
-            // Redirect to login if not authenticated
+            console.warn('Usuario no autenticado, redirigiendo a login')
             navigate('/login')
             onClose?.()
             return
         }
-        setShowPaymentModal(true)
-        clearCart()
-        setCart([])
+
+        setShowCheckout(true)
     }
 
     return (
@@ -64,9 +72,9 @@ export default function CartDrawer({ isOpen, onClose }) {
                 className={`fixed top-0 right-0 h-screen w-80 bg-white shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
             >
                 <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-                    <h2 className="text-xl font-bold">🛒 Carrito</h2>
+                    <h2 className="text-xl font-bold">Carrito</h2>
                     <button onClick={onClose} className="text-2xl font-bold hover:opacity-80">
-                        ✕
+                        X
                     </button>
                 </div>
 
@@ -85,7 +93,7 @@ export default function CartDrawer({ isOpen, onClose }) {
                                         onClick={() => removeFromCart(item.id)}
                                         className="text-red-500 hover:text-red-700 font-bold text-lg"
                                     >
-                                        ✕
+                                        X
                                     </button>
                                 </div>
 
@@ -94,7 +102,7 @@ export default function CartDrawer({ isOpen, onClose }) {
                                         onClick={() => handleDecrement(item.id)}
                                         className="px-3 py-1 text-lg font-bold text-red-500 hover:bg-red-50"
                                     >
-                                        −
+                                        -
                                     </button>
                                     <span className="text-center font-bold text-gray-800 min-w-[2rem]">{item.qty || 1}</span>
                                     <button
@@ -135,26 +143,17 @@ export default function CartDrawer({ isOpen, onClose }) {
                 )}
             </div>
 
-            {showPaymentModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                    <div className="bg-white rounded-2xl shadow-elevated max-w-md w-full mx-4 p-8 text-center animate-fade-in">
-                        <div className="text-5xl mb-4">🎉</div>
-                        <h2 className="text-2xl font-bold mb-2 text-gray-800">¡Pago confirmado!</h2>
-                        <p className="text-gray-700 mb-6">
-                            Tu compra se ha registrado correctamente. ¡Gracias por confiar en Juguetería Alegre!
-                        </p>
-                        <button
-                            onClick={() => {
-                                setShowPaymentModal(false)
-                                onClose?.()
-                            }}
-                            className="btn-primary w-full"
-                        >
-                            Cerrar
-                        </button>
-                    </div>
-                </div>
-            )}
+            <CheckoutModal
+                isOpen={showCheckout}
+                onClose={() => {
+                    setShowCheckout(false)
+                    clearCart()
+                    setCart([])
+                    onClose?.()
+                }}
+                cartItems={cart}
+                total={parseFloat(total)}
+            />
         </>
     )
 }
