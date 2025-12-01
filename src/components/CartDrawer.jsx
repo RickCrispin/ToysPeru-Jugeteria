@@ -4,6 +4,9 @@ import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import CheckoutModal from './CheckoutModal'
 
+const USD_TO_PEN = 3.80
+const convertToPen = (priceInUsd) => (Number.parseFloat(priceInUsd ?? 0) * USD_TO_PEN).toFixed(2)
+
 export default function CartDrawer({ isOpen, onClose }) {
     const [cart, setCart] = useState(getCart())
     const [showCheckout, setShowCheckout] = useState(false)
@@ -87,7 +90,7 @@ export default function CartDrawer({ isOpen, onClose }) {
                                 <div className="flex justify-between items-start mb-3">
                                     <div>
                                         <p className="font-bold text-gray-800">{item.nombre || item.name}</p>
-                                        <p className="text-indigo-600 font-bold text-lg">${Number.parseFloat(item.precio ?? item.price).toFixed(2)}</p>
+                                        <p className="text-indigo-600 font-bold text-lg">S/ {convertToPen(item.precio ?? item.price)}</p>
                                     </div>
                                     <button
                                         onClick={() => removeFromCart(item.id)}
@@ -114,7 +117,7 @@ export default function CartDrawer({ isOpen, onClose }) {
                                 </div>
 
                                 <p className="text-xs text-gray-600 mt-2">
-                                    Subtotal: ${(Number.parseFloat(item.precio ?? item.price ?? 0) * (item.qty || 1)).toFixed(2)}
+                                    Subtotal: S/ {(Number.parseFloat(item.precio ?? item.price ?? 0) * USD_TO_PEN * (item.qty || 1)).toFixed(2)}
                                 </p>
                             </div>
                         ))

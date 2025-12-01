@@ -28,12 +28,12 @@ export default function AdminDashboard() {
             <div className="container mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-4xl font-extrabold text-white mb-2">🛡️ Panel de Administración</h1>
+                    <h1 className="text-4xl font-extrabold text-white mb-2">Panel de Administración</h1>
                     <p className="text-purple-200">Gestión completa del sistema</p>
                 </div>
 
                 {/* Menu Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {/* Gestor de Usuarios */}
                     <div
                         onClick={() => navigate('/admin/users')}
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
                     >
                         <div className="text-5xl mb-4">👥</div>
                         <h2 className="text-2xl font-bold text-gray-800 mb-2">Gestor de Usuarios</h2>
-                        <p className="text-gray-600 mb-4">Ver, modificar y eliminar usuarios del sistema</p>
+                        <p className="text-gray-600 mb-4">Ver, modificar y eliminar usuarios</p>
                         <div className="text-sm text-indigo-600 font-semibold">→ Acceder</div>
                     </div>
 
@@ -52,7 +52,18 @@ export default function AdminDashboard() {
                     >
                         <div className="text-5xl mb-4">📦</div>
                         <h2 className="text-2xl font-bold text-gray-800 mb-2">Gestor de Productos</h2>
-                        <p className="text-gray-600 mb-4">Ver, crear, modificar y eliminar productos</p>
+                        <p className="text-gray-600 mb-4">Crear, editar y eliminar productos</p>
+                        <div className="text-sm text-indigo-600 font-semibold">→ Acceder</div>
+                    </div>
+
+                    {/* Gestor de Roles */}
+                    <div
+                        onClick={() => navigate('/admin/roles')}
+                        className="bg-white rounded-2xl shadow-lg p-8 cursor-pointer hover:shadow-2xl hover:scale-105 transition transform"
+                    >
+                        <div className="text-5xl mb-4">🔐</div>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Gestor de Roles</h2>
+                        <p className="text-gray-600 mb-4">Administrar roles y permisos</p>
                         <div className="text-sm text-indigo-600 font-semibold">→ Acceder</div>
                     </div>
 
@@ -63,7 +74,7 @@ export default function AdminDashboard() {
                     >
                         <div className="text-5xl mb-4">📊</div>
                         <h2 className="text-2xl font-bold text-gray-800 mb-2">Resumen de Ventas</h2>
-                        <p className="text-gray-600 mb-4">Análisis gerencial de todas las ventas</p>
+                        <p className="text-gray-600 mb-4">Análisis gerencial de ventas</p>
                         <div className="text-sm text-indigo-600 font-semibold">→ Acceder</div>
                     </div>
                 </div>

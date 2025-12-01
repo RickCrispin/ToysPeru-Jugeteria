@@ -67,8 +67,7 @@ toy-store/
 │   │   ├── Contact.jsx           # Formulario de contacto
 │   │   └── Footer.jsx            # Pie de página
 │   ├── lib/
-│   │   ├── cart.js              # Utilidades del carrito (localStorage)
-│   │   └── supabaseClient.js    # Cliente Supabase (stub)
+│   │   └── cart.js              # Utilidades del carrito (localStorage)
 │   ├── App.jsx                  # Componente raíz
 │   ├── main.jsx                 # Punto de entrada
 │   └── index.css                # Estilos globales
@@ -285,7 +284,7 @@ VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
-2. **Descomenta en `src/lib/supabaseClient.js`**:
+2. **Verifica configuración en `src/lib/supabase.js`** (cliente Supabase principal):
 ```javascript
 import { createClient } from '@supabase/supabase-js'
 

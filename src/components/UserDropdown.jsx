@@ -33,7 +33,7 @@ export default function UserDropdown({ user, role }) {
                     .single()
                 
                 if (!emailError && profileByEmail) {
-                    console.log('✅ Perfil encontrado por email, sincronizando...')
+                    console.log('Perfil encontrado por email, sincronizando...')
                     
                     // Sincronizar el ID
                     try {
@@ -101,7 +101,7 @@ export default function UserDropdown({ user, role }) {
                                 onClick={() => handleNavigation('/admin')}
                                 className="w-full text-left px-4 py-2 hover:bg-purple-50 transition flex items-center gap-2 bg-purple-100 text-purple-700 font-semibold"
                             >
-                                <span>⚙️ Ajustes de Administrador</span>
+                                <span>Ajustes de Administrador</span>
                             </button>
                         )}
 

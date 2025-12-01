@@ -3,6 +3,9 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { clearCart, getCart } from '../lib/cart'
 
+const USD_TO_PEN = 3.80
+const convertToPen = (priceInUsd) => (Number.parseFloat(priceInUsd ?? 0) * USD_TO_PEN).toFixed(2)
+
 export default function CheckoutModal({ isOpen, onClose, cartItems, total }) {
     const { user } = useAuth()
     const [step, setStep] = useState('shipping') // shipping, payment, review, confirmation
@@ -496,23 +499,23 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, total }) {
                             </div>
 
                             <div className="bg-gray-50 p-4 rounded-lg">
-                                <h3 className="font-bold mb-3">💳 Método de Pago</h3>
+                                <h3 className="font-bold mb-3">Método de Pago</h3>
                                 <p className="text-sm text-gray-700">
-                                    {payment.method === 'credit_card' && '💳 Tarjeta de Crédito'}
-                                    {payment.method === 'debit_card' && '💳 Tarjeta de Débito'}
-                                    {payment.method === 'paypal' && '🅿️ PayPal'}
-                                    {payment.method === 'yape' && '📱 Yape'}
-                                    {payment.method === 'plin' && '📱 Plin'}
+                                    {payment.method === 'credit_card' && 'Tarjeta de Crédito'}
+                                    {payment.method === 'debit_card' && 'Tarjeta de Débito'}
+                                    {payment.method === 'paypal' && 'PayPal'}
+                                    {payment.method === 'yape' && 'Yape'}
+                                    {payment.method === 'plin' && 'Plin'}
                                 </p>
                             </div>
 
                             <div className="bg-gray-50 p-4 rounded-lg">
-                                <h3 className="font-bold mb-3">📦 Artículos ({cartItems.length})</h3>
+                                <h3 className="font-bold mb-3">Artículos ({cartItems.length})</h3>
                                 <div className="space-y-2 max-h-40 overflow-y-auto">
                                     {cartItems.map(item => (
                                         <div key={item.id} className="flex justify-between text-sm text-gray-700">
                                             <span>{item.nombre} x{item.qty || 1}</span>
-                                            <span>${(item.precio * (item.qty || 1)).toFixed(2)}</span>
+                                            <span>S/ {convertToPen(item.precio * (item.qty || 1))}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -530,7 +533,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, total }) {
                     {/* CONFIRMACIÓN */}
                     {step === 'confirmation' && (
                         <div className="text-center space-y-4">
-                            <div className="text-6xl mb-4">✅</div>
+                            <div className="text-6xl mb-4">✓</div>
                             <h3 className="text-2xl font-bold text-green-600">¡Pedido Confirmado!</h3>
                             <p className="text-gray-600">Tu pago ha sido procesado exitosamente.</p>
                             <div className="bg-gray-50 p-6 rounded-lg space-y-2">
@@ -544,7 +547,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, total }) {
                     {/* ERRORES */}
                     {error && (
                         <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
-                            <p className="text-red-700 font-semibold">❌ {error}</p>
+                            <p className="text-red-700 font-semibold">{error}</p>
                         </div>
                     )}
                 </div>

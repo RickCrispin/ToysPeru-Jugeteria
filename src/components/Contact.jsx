@@ -138,7 +138,7 @@ export default function Contact() {
 
                     <div className="bg-white rounded-lg p-6 shadow-md border-l-4 border-pink-600">
                         <h3 className="text-xl font-bold mb-2 text-gray-800 flex items-center gap-2">
-                            <span className="text-2xl">📧</span> Email
+                            <span className="text-2xl">@</span> Email
                         </h3>
                         <p className="text-gray-700 font-semibold">info@toysperú.com</p>
                         <p className="text-gray-700 font-semibold">soporte@toysperú.com</p>

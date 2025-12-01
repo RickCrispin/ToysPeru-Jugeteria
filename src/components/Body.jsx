@@ -1,14 +1,39 @@
 ﻿import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import ProductCard from './ProductCard'
 
 const Body = ({ search = '' }) => {
+    const [searchParams] = useSearchParams()
     const [productos, setProductos] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    const [selectedCategory, setSelectedCategory] = useState('todos')
+    const [showFilters, setShowFilters] = useState(false)
+    
+    // Obtener filtros iniciales desde URL
+    const getInitialFilters = () => {
+        return {
+            categoria: searchParams.get('categoria') || 'todos',
+            marca: searchParams.get('marca') || 'todos',
+            precioMin: parseInt(searchParams.get('precioMin')) || 0,
+            precioMax: parseInt(searchParams.get('precioMax')) || 1000,
+            edadMinima: searchParams.get('edadMinima') || 'todas',
+            material: searchParams.get('material') || 'todos',
+            stock: searchParams.get('stock') || 'todos',
+            destacado: searchParams.get('destacado') || 'todos',
+            novedad: searchParams.get('novedad') || 'todos'
+        }
+    }
+    
+    // Filtros avanzados
+    const [filters, setFilters] = useState(getInitialFilters())
+    
+    // Opciones para filtros
     const [categories, setCategories] = useState([])
-    const [showCategoryFilter, setShowCategoryFilter] = useState(false)
+    const [marcas, setMarcas] = useState([])
+    const [materiales, setMateriales] = useState([])
+    const [edades, setEdades] = useState([])
+    const [maxPrecio, setMaxPrecio] = useState(1000)
 
     // Función para cargar productos
     const fetchProductos = async () => {
@@ -21,7 +46,7 @@ const Body = ({ search = '' }) => {
 
             const { data, error } = await supabase
                 .from('productos')
-                .select('id, nombre, precio, imagen_url, descripcion, stock, es_destacado, categoria, marca')
+                .select('*')
                 .order('created_at', { ascending: false })
 
             if (error) {
@@ -34,9 +59,18 @@ const Body = ({ search = '' }) => {
             
             setProductos(data || [])
             
-            // Extraer categorías únicas
+            // Extraer filtros únicos
             const uniqueCategories = [...new Set(data?.map(p => p.categoria).filter(Boolean) || [])]
+            const uniqueMarcas = [...new Set(data?.map(p => p.marca).filter(Boolean) || [])]
+            const uniqueMateriales = [...new Set(data?.map(p => p.material).filter(Boolean) || [])]
+            const uniqueEdades = [...new Set(data?.map(p => p.edad_minima).filter(Boolean) || [])]
+            const precioMaximo = Math.max(...(data?.map(p => parseFloat(p.precio) || 0) || [0]))
+            
             setCategories(uniqueCategories.sort())
+            setMarcas(uniqueMarcas.sort())
+            setMateriales(uniqueMateriales.sort())
+            setEdades(uniqueEdades.sort((a, b) => a - b))
+            setMaxPrecio(Math.ceil(precioMaximo))
             
             setError(null)
         } catch (err) {
@@ -104,53 +138,199 @@ const Body = ({ search = '' }) => {
             (p.categoria && p.categoria.toLowerCase().includes(search.toLowerCase())) ||
             (p.marca && p.marca.toLowerCase().includes(search.toLowerCase()))
         
-        const matchesCategory = selectedCategory === 'todos' || p.categoria === selectedCategory
+        const matchesCategory = filters.categoria === 'todos' || p.categoria === filters.categoria
+        const matchesMarca = filters.marca === 'todos' || p.marca === filters.marca
+        const matchesPrecio = parseFloat(p.precio) >= filters.precioMin && parseFloat(p.precio) <= filters.precioMax
+        const matchesEdad = filters.edadMinima === 'todas' || p.edad_minima === parseInt(filters.edadMinima)
+        const matchesMaterial = filters.material === 'todos' || p.material === filters.material
+        const matchesStock = filters.stock === 'todos' || 
+            (filters.stock === 'disponible' && p.stock > 0) ||
+            (filters.stock === 'agotado' && p.stock === 0)
+        const matchesDestacado = filters.destacado === 'todos' || 
+            (filters.destacado === 'si' && p.es_destacado) ||
+            (filters.destacado === 'no' && !p.es_destacado)
+        const matchesNovedad = filters.novedad === 'todos' || 
+            (filters.novedad === 'si' && p.es_novedad) ||
+            (filters.novedad === 'no' && !p.es_novedad)
         
-        return matchesSearch && matchesCategory
+        return matchesSearch && matchesCategory && matchesMarca && matchesPrecio && 
+               matchesEdad && matchesMaterial && matchesStock && matchesDestacado && matchesNovedad
     })
 
     return (
         <div className="container mx-auto p-4">
             <h2 className="text-2xl font-bold mb-6">Productos</h2>
 
-            {/* Botón para desplegar filtro de categorías */}
-            {categories.length > 0 && (
+            {/* Botón para desplegar filtros avanzados */}
+            {productos.length > 0 && (
                 <button
-                    onClick={() => setShowCategoryFilter(!showCategoryFilter)}
-                    className="mb-6 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition-all"
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="mb-6 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
                 >
-                    {showCategoryFilter ? 'Ocultar' : 'Filtrar'}
+                    {showFilters ? '▼ Ocultar Filtros' : '▶ Filtros Avanzados'}
+                    <span className="text-sm bg-white/20 px-2 py-1 rounded-full">{filtered.length} resultados</span>
                 </button>
             )}
 
-            {/* Filtro de categorías (desplegable) */}
-            {categories.length > 0 && showCategoryFilter && (
-                <div className="mb-8 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">Filtrar por categoría</h3>
-                    <div className="flex flex-wrap gap-2">
-                        <button
-                            onClick={() => setSelectedCategory('todos')}
-                            className={`px-4 py-2 rounded-full font-semibold transition-all ${
-                                selectedCategory === 'todos'
-                                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
-                                    : 'bg-white text-gray-700 border border-gray-300 hover:border-indigo-400 hover:bg-indigo-50'
-                            }`}
-                        >
-                            Todos ({productos.length})
-                        </button>
-                        {categories.map((cat) => (
-                            <button
-                                key={cat}
-                                onClick={() => setSelectedCategory(cat)}
-                                className={`px-4 py-2 rounded-full font-semibold transition-all ${
-                                    selectedCategory === cat
-                                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
-                                        : 'bg-white text-gray-700 border border-gray-300 hover:border-indigo-400 hover:bg-indigo-50'
-                                }`}
+            {/* Panel de filtros avanzados - Modal Desplegable */}
+            {productos.length > 0 && showFilters && (
+                <div className="mb-8 p-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border-2 border-indigo-200 shadow-lg">
+                    <h3 className="text-xl font-bold text-gray-800 mb-6">Filtros Avanzados</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        
+                        {/* Categoría */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Categoría</label>
+                            <select 
+                                value={filters.categoria} 
+                                onChange={(e) => setFilters({...filters, categoria: e.target.value})}
+                                className="w-full px-4 py-2 border-2 border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white"
                             >
-                                {cat} ({productos.filter(p => p.categoria === cat).length})
-                            </button>
-                        ))}
+                                <option value="todos">Todas las categorías</option>
+                                {categories.map(cat => (
+                                    <option key={cat} value={cat}>{cat}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Marca */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Marca</label>
+                            <select 
+                                value={filters.marca} 
+                                onChange={(e) => setFilters({...filters, marca: e.target.value})}
+                                className="w-full px-4 py-2 border-2 border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white"
+                            >
+                                <option value="todos">Todas las marcas</option>
+                                {marcas.map(marca => (
+                                    <option key={marca} value={marca}>{marca}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Material */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Material</label>
+                            <select 
+                                value={filters.material} 
+                                onChange={(e) => setFilters({...filters, material: e.target.value})}
+                                className="w-full px-4 py-2 border-2 border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white"
+                            >
+                                <option value="todos">Todos los materiales</option>
+                                {materiales.map(mat => (
+                                    <option key={mat} value={mat}>{mat}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Edad Mínima */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Edad Mínima</label>
+                            <select 
+                                value={filters.edadMinima} 
+                                onChange={(e) => setFilters({...filters, edadMinima: e.target.value})}
+                                className="w-full px-4 py-2 border-2 border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white"
+                            >
+                                <option value="todas">Todas las edades</option>
+                                {edades.map(edad => (
+                                    <option key={edad} value={edad}>{edad}+ años</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Stock */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Disponibilidad</label>
+                            <select 
+                                value={filters.stock} 
+                                onChange={(e) => setFilters({...filters, stock: e.target.value})}
+                                className="w-full px-4 py-2 border-2 border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white"
+                            >
+                                <option value="todos">Todos</option>
+                                <option value="disponible">Con stock</option>
+                                <option value="agotado">Agotado</option>
+                            </select>
+                        </div>
+
+                        {/* Destacado */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Destacados</label>
+                            <select 
+                                value={filters.destacado} 
+                                onChange={(e) => setFilters({...filters, destacado: e.target.value})}
+                                className="w-full px-4 py-2 border-2 border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white"
+                            >
+                                <option value="todos">Mostrar todos</option>
+                                <option value="si">Solo destacados</option>
+                                <option value="no">Sin destacados</option>
+                            </select>
+                        </div>
+
+                        {/* Novedad */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Novedades</label>
+                            <select 
+                                value={filters.novedad} 
+                                onChange={(e) => setFilters({...filters, novedad: e.target.value})}
+                                className="w-full px-4 py-2 border-2 border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white"
+                            >
+                                <option value="todos">Mostrar todos</option>
+                                <option value="si">Solo novedades</option>
+                                <option value="no">Sin novedades</option>
+                            </select>
+                        </div>
+
+                        {/* Rango de Precio */}
+                        <div className="lg:col-span-2">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Rango de Precio: S/. {filters.precioMin} - S/. {filters.precioMax}
+                            </label>
+                            <div className="flex gap-4 items-center">
+                                <input 
+                                    type="range" 
+                                    min="0" 
+                                    max={maxPrecio}
+                                    value={filters.precioMin}
+                                    onChange={(e) => setFilters({...filters, precioMin: parseInt(e.target.value)})}
+                                    className="flex-1 h-2 bg-indigo-300 rounded-lg appearance-none cursor-pointer"
+                                />
+                                <input 
+                                    type="range" 
+                                    min="0" 
+                                    max={maxPrecio}
+                                    value={filters.precioMax}
+                                    onChange={(e) => setFilters({...filters, precioMax: parseInt(e.target.value)})}
+                                    className="flex-1 h-2 bg-purple-300 rounded-lg appearance-none cursor-pointer"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Botón para limpiar filtros */}
+                    <div className="mt-6 flex gap-3">
+                        <button
+                            onClick={() => setFilters({
+                                categoria: 'todos',
+                                marca: 'todos',
+                                precioMin: 0,
+                                precioMax: maxPrecio,
+                                edadMinima: 'todas',
+                                material: 'todos',
+                                stock: 'todos',
+                                destacado: 'todos',
+                                novedad: 'todos'
+                            })}
+                            className="px-4 py-2 bg-white text-gray-700 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-all"
+                        >
+                            Limpiar Filtros
+                        </button>
+                        <button
+                            onClick={() => setShowFilters(false)}
+                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-all ml-auto"
+                        >
+                            Aplicar Filtros
+                        </button>
                     </div>
                 </div>
             )}
@@ -164,7 +344,7 @@ const Body = ({ search = '' }) => {
                     </p>
                 </div>
             ) : filtered.length === 0 ? (
-                <p className="text-center text-gray-500">No se encontraron productos para "{search}".</p>
+                <p className="text-center text-gray-500 text-lg py-8">No se encontraron productos con los filtros seleccionados.</p>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {filtered.map((producto) => (

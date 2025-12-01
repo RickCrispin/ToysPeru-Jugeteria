@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
+const USD_TO_PEN = 3.80
+const convertToPen = (priceInUsd) => (Number.parseFloat(priceInUsd ?? 0) * USD_TO_PEN).toFixed(2)
+
 export default function SearchDropdown({ searchTerm, onSelectProduct, onDetailClose }) {
     const [results, setResults] = useState([])
     const [loading, setLoading] = useState(false)
@@ -98,7 +101,7 @@ export default function SearchDropdown({ searchTerm, onSelectProduct, onDetailCl
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
-                                    <span className="text-lg">📦</span>
+                                    <span className="text-lg">Categoría</span>
                                 )}
                             </div>
 
@@ -112,7 +115,7 @@ export default function SearchDropdown({ searchTerm, onSelectProduct, onDetailCl
                                         {product.categoria || 'Sin categoría'}
                                     </p>
                                     <p className="text-indigo-600 font-bold text-sm ml-2">
-                                        ${Number.parseFloat(product.precio).toFixed(2)}
+                                        S/ {convertToPen(product.precio)}
                                     </p>
                                 </div>
                                 {product.stock <= 0 && (

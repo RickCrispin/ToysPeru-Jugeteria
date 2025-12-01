@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 
+const USD_TO_PEN = 3.80
+const convertToPen = (priceInUsd) => (Number.parseFloat(priceInUsd ?? 0) * USD_TO_PEN).toFixed(2)
+
 export default function AdminSales() {
     const navigate = useNavigate()
     const { role } = useAuth()
@@ -138,7 +141,7 @@ export default function AdminSales() {
                     </div>
                     <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
                         <p className="text-gray-300 text-sm mb-2">Total Ingresos</p>
-                        <p className="text-4xl font-bold text-white">${salesData.totalRevenue.toFixed(2)}</p>
+                        <p className="text-4xl font-bold text-white">S/ {convertToPen(salesData.totalRevenue)}</p>
                     </div>
                     <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
                         <p className="text-gray-300 text-sm mb-2">Productos Vendidos</p>
@@ -146,7 +149,7 @@ export default function AdminSales() {
                     </div>
                     <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
                         <p className="text-gray-300 text-sm mb-2">Promedio por Orden</p>
-                        <p className="text-4xl font-bold text-white">${salesData.averageOrderValue.toFixed(2)}</p>
+                        <p className="text-4xl font-bold text-white">S/ {convertToPen(salesData.averageOrderValue)}</p>
                     </div>
                 </div>
 
@@ -224,7 +227,7 @@ export default function AdminSales() {
                                         <tr key={order.id} className="border-b border-white border-opacity-10 hover:bg-white hover:bg-opacity-5">
                                             <td className="px-4 py-3 font-mono text-xs">{order.id.substring(0, 8)}</td>
                                             <td className="px-4 py-3">{itemCount} items</td>
-                                            <td className="px-4 py-3 font-semibold">${total.toFixed(2)}</td>
+                                            <td className="px-4 py-3 font-semibold">S/ {convertToPen(total)}</td>
                                             <td className="px-4 py-3">
                                                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                                                     order.status === 'completed' ? 'bg-green-500 bg-opacity-20 text-green-300' :

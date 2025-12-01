@@ -100,14 +100,14 @@ export default function SettingsPage() {
                 .rpc('liberar_email', { email_to_release: user?.email })
 
             if (liberarError) {
-                console.warn('⚠️ Error al liberar email:', liberarError)
+                console.warn('Error al liberar email:', liberarError)
                 // Continuar de todas formas con el cierre de sesión
             } else {
-                console.log('✅ Email liberado:', liberarResult)
+                console.log('Email liberado:', liberarResult)
             }
 
             // Cerrar sesión inmediatamente
-            console.log('🔐 Cerrando sesión...')
+            console.log('Cerrando sesión...')
             await signOut()
             
             // Limpiar también el localStorage y sessionStorage

@@ -58,6 +58,40 @@ export default function ProductDetail({ product, onClose }) {
                         </p>
                     </div>
 
+                    {/* Tags */}
+                    {(product.es_destacado || product.es_novedad) && (
+                        <div className="flex flex-wrap gap-2">
+                            {product.es_destacado && (
+                                <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full border border-yellow-300">Destacado</span>
+                            )}
+                            {product.es_novedad && (
+                                <span className="inline-block bg-red-100 text-red-800 text-xs font-semibold px-3 py-1 rounded-full border border-red-300">Novedad</span>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Atributos del Producto */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {product.marca && (
+                            <div className="bg-purple-50 border border-purple-200 p-3 rounded-lg">
+                                <p className="text-xs font-semibold text-gray-600 mb-1">Marca</p>
+                                <p className="text-sm font-bold text-purple-700">{product.marca}</p>
+                            </div>
+                        )}
+                        {product.material && (
+                            <div className="bg-orange-50 border border-orange-200 p-3 rounded-lg">
+                                <p className="text-xs font-semibold text-gray-600 mb-1">Material</p>
+                                <p className="text-sm font-bold text-orange-700">{product.material}</p>
+                            </div>
+                        )}
+                        {product.edad_minima && (
+                            <div className="bg-green-50 border border-green-200 p-3 rounded-lg">
+                                <p className="text-xs font-semibold text-gray-600 mb-1">Edad Mínima</p>
+                                <p className="text-sm font-bold text-green-700">{product.edad_minima} años</p>
+                            </div>
+                        )}
+                    </div>
+
                     {/* Descripción */}
                     <div>
                         <h3 className="text-lg font-semibold text-gray-800 mb-2">Descripción</h3>

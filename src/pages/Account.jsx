@@ -59,7 +59,7 @@ export default function AccountPage() {
 
             // Si no encuentra por ID, buscar por email
             if (err && err.code === 'PGRST116' && user?.email) {
-                console.log('⚠️ No perfil por ID, buscando por email...')
+                console.log('No perfil por ID, buscando por email...')
                 const { data: profileByEmail, error: emailErr } = await supabase
                     .from('profiles')
                     .select('*')
@@ -67,7 +67,7 @@ export default function AccountPage() {
                     .single()
                 
                 if (!emailErr && profileByEmail) {
-                    console.log('✅ Perfil encontrado por email, sincronizando datos...')
+                    console.log('Perfil encontrado por email, sincronizando datos...')
                     
                     // Sincronizar los datos: copiar el ID correcto y actualizar el perfil
                     try {
@@ -81,9 +81,9 @@ export default function AccountPage() {
                             .eq('email', user.email)
                         
                         if (updateError) {
-                            console.error('⚠️ Error al sincronizar perfil:', updateError)
+                            console.error('Error al sincronizar perfil:', updateError)
                         } else {
-                            console.log('✅ Datos sincronizados correctamente')
+                            console.log('Datos sincronizados correctamente')
                         }
                     } catch (e) {
                         console.error('Error en sincronización:', e)

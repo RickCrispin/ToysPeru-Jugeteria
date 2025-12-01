@@ -111,17 +111,17 @@ export async function checkAdminPermissions() {
 export function printDiagnostic(results) {
   console.group('🔍 Admin Diagnostic')
   
-  console.log('📧 Session:', results.session || 'Not authenticated')
-  console.log('👤 Profile:', results.profile || 'Not found')
+  console.log('Session:', results.session || 'Not authenticated')
+  console.log('Profile:', results.profile || 'Not found')
   
-  console.log('\n✅ Permissions:')
-  console.log('  Read products:', results.canReadProducts ? '✓' : '✗')
-  console.log('  Insert product:', results.canInsertProduct ? '✓' : '✗')
-  console.log('  Update product:', results.canUpdateProduct ? '✓' : '✗')
-  console.log('  Delete product:', results.canDeleteProduct ? '✓' : '✗')
+  console.log('\nPermissions:')
+  console.log('  Read products:', results.canReadProducts ? 'Yes' : 'No')
+  console.log('  Insert product:', results.canInsertProduct ? 'Yes' : 'No')
+  console.log('  Update product:', results.canUpdateProduct ? 'Yes' : 'No')
+  console.log('  Delete product:', results.canDeleteProduct ? 'Yes' : 'No')
   
   if (results.errors.length > 0) {
-    console.log('\n❌ Errors:')
+    console.log('\nErrors:')
     results.errors.forEach(e => console.log('  -', e))
   }
   

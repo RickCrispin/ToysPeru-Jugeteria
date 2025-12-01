@@ -13,6 +13,7 @@ import AdminProductsPage from './pages/AdminProducts'
 import AdminDiagnosticPage from './pages/AdminDiagnostic'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminUsers from './pages/AdminUsers'
+import AdminRoles from './pages/AdminRoles'
 import AdminSales from './pages/AdminSales'
 import AccountPage from './pages/Account'
 import OrdersPage from './pages/Orders'
@@ -58,6 +59,7 @@ function App() {
                             <Route path="/admin" element={<AdminDashboard />} />
                             <Route path="/admin/users" element={<AdminUsers />} />
                             <Route path="/admin/products" element={<AdminProductsPage />} />
+                            <Route path="/admin/roles" element={<AdminRoles />} />
                             <Route path="/admin/sales" element={<AdminSales />} />
                             <Route path="/admin/diagnostic" element={<AdminDiagnosticPage />} />
                         </Routes>

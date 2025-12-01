@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import { addToCart } from '../lib/cart'
 import ProductDetail from './ProductDetail'
 
+const USD_TO_PEN = 3.80
+const convertToPen = (priceInUsd) => (Number.parseFloat(priceInUsd ?? 0) * USD_TO_PEN).toFixed(2)
+
 export default function ProductCard({ product }) {
     const [added, setAdded] = useState(false)
     const [showDetail, setShowDetail] = useState(false)
@@ -25,7 +28,7 @@ export default function ProductCard({ product }) {
                 <h3 className="mt-4 font-bold text-lg text-gray-800">{product.nombre || product.name}</h3>
                 <p className="text-blue-600 text-xs font-semibold mt-1">{product.categoria || 'Sin categoría'}</p>
                 <p className="text-gray-600 text-sm mt-1 flex-1">Producto de calidad para niños</p>
-                <p className="text-indigo-600 font-bold text-2xl mt-3">${Number.parseFloat(product.precio ?? product.price ?? 0).toFixed(2)}</p>
+                <p className="text-indigo-600 font-bold text-2xl mt-3">S/ {convertToPen(product.precio ?? product.price ?? 0)}</p>
                 <div className="mt-4 flex gap-2">
                     <button
                         onClick={() => setShowDetail(true)}
