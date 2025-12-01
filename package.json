@@ -10,7 +10,7 @@
         "db:check": "psql %SUPABASE_DB_URL% -c \"select tablename from pg_tables where schemaname='public';\""
     },
     "dependencies": {
-        "@supabase/supabase-js": "^2.84.0",
+        "@supabase/supabase-js": "^2.86.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-router-dom": "^6.28.0"
