@@ -6,6 +6,7 @@
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
+        "predeploy": "npm run build",
         "db:setup": "psql %SUPABASE_DB_URL% -f supabase-setup.sql",
         "db:check": "psql %SUPABASE_DB_URL% -c \"select tablename from pg_tables where schemaname='public';\""
     },
